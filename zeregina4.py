@@ -143,7 +143,7 @@ def on_double_clicking2(event):
 # Login eGela
 root = tk.Tk()
 root.geometry('250x150')
-root.iconbitmap('./favicon.ico')
+#root.iconbitmap('./favicon.ico')
 root.title('Login eGela')
 helper.center(root)
 egela = eGela.eGela(root)
