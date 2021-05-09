@@ -1,6 +1,9 @@
 from tkinter import messagebox
-import time
 import requests
+import urllib
+import urllib.parse #https://stackoverflow.com/questions/28906859/module-has-no-attribute-urlencode
+from bs4 import BeautifulSoup
+import time
 import helper
 
 class eGela:
@@ -15,117 +18,166 @@ class eGela:
         self._root = root
 
     def check_credentials(self, username, password, event=None):
-        metodoa = "GET"
-        goiburuak = {'Host': 'egela.ehu.eus', 'Content-Type': 'application/x-www-form-urlencoded'}
-        datuak = ""
-        edukia = ""
-        cookie = ""
-        uria = "https://egela.ehu.eus/"
-
         popup, progress_var, progress_bar = helper.progress("check_credentials", "Logging into eGela...")
         progress = 0
         progress_var.set(progress)
         progress_bar.update()
 
-        print("##### 1. ESKAERA #####") #https://egela.ehu.eus/
-        erantzuna = requests.request(metodoa, uria, allow_redirects=False)
-        if()#Codigo 303
-        print("Berbideraketa egiten...")
-        uria = erantzuna.headers['Location']
-        print(uria)
-        if ("Set-Cookie" in erantzuna.headers):  # Set-Cookie goiburua badago balioa hartu eta gorde
-            print("Cookie-a hartzen")
-            cookie = erantzuna.headers['Set-Cookie']
-
-            # MoodleSessionegela=t8c59kd3r8lnn4364ds5s1r5luo81jet; path=/; secure formatua duenez split bat erabili behar dugu
-            cookie = cookie.split(";")[0]  # Honekin lehenengo zatia hartuko dugu, balio zaiguna
-            print(cookie)
-            goiburuak['Cookie'] = cookie
-
-        print("##### 2. ESKAERA #####") #https://egela.ehu.eus/login/index.php
+        print("##### 1. ESKAERA #####")
         metodoa = 'POST'
-        datuak = {'username': username, 'password': password}
-        goiburuak['Content-Length'] = str(len(datuak))
-        print(goiburuak['Content-Length'])
-        erantzuna = requests.request(metodoa, uria, data=datuak, headers=goiburuak, allow_redirects=False)
-
+        uria = "https://egela.ehu.eus/login/index.php"
+        headers = {'Host': 'egela.ehu.eus',
+                   'Content-Type': 'application/x-www-form-urlencoded', }
+        data = {'username': username.get(),
+                'password': password.get()}
+        data_encoded = urllib.parse.urlencode(data)
+        headers['Content-Length'] = str(len(data_encoded))
+        erantzuna = requests.request(metodoa, uria, headers=headers, data=data_encoded, allow_redirects=False)
+        print(metodoa + " " + uria)
+        kodea = erantzuna.status_code
+        deskribapena = erantzuna.reason
+        print(str(kodea) + " " + deskribapena)
+        cookiea = ""
+        location = ""
+        for goiburua in erantzuna.headers:
+            print(goiburua + ": " + erantzuna.headers[goiburua])
+            if goiburua == "Set-Cookie":
+                cookiea = erantzuna.headers[goiburua].split(";")[0]
+                print('COOKIE: ' + cookiea)
+            elif goiburua == "Location":
+                location = erantzuna.headers[goiburua]
+                print('LOCATION: ' + location)
+        self._cookiea = cookiea
+        edukia = erantzuna.content
         progress = 33
         progress_var.set(progress)
         progress_bar.update()
-        time.sleep(0.1)
+        time.sleep(1)
 
-        print("\n##### 3. ESKAERA #####") #https://egela.ehu.eus/login/index.php?testsession=35809
-        print("Berbideraketa egiten...")
-        metodoa = "GET"
-        uria = erantzuna.headers['Location']
-        print(uria)
-        if ("Set-Cookie" in erantzuna.headers):  # Set-Cookie goiburua badago balioa hartu eta gorde
-            print("Cookie-a hartzen")
-            cookie = erantzuna.headers['Set-Cookie']
+        print("\n##### 2. ESKAERA #####")
 
-            # MoodleSessionegela=t8c59kd3r8lnn4364ds5s1r5luo81jet; path=/; secure formatua duenez split bat erabili behar dugu
-            cookie = cookie.split(";")[0]  # Honekin lehenengo zatia hartuko dugu, balio zaiguna
-            print(cookie)
-            goiburuak['Cookie'] = cookie
+        metodoa = 'GET'
+        uria = location
+        goiburuak = {'Host': uria.split('/')[2],
+                     'Cookie': cookiea}
+        erantzuna = requests.request(metodoa, uria, headers=goiburuak, allow_redirects=False)
+        print(metodoa + " " + uria)
+        kodea = erantzuna.status_code
+        deskribapena = erantzuna.reason
+        print(str(kodea) + " " + deskribapena)
+        for goiburua in erantzuna.headers:
+            print(goiburua + ": " + erantzuna.headers[goiburua])
+            if goiburua == "Set-Cookie":
+                cookiea = erantzuna.headers[goiburua].split(";")[0]
+                print
+                cookiea
+            elif goiburua == "Location":
+                location = erantzuna.headers[goiburua]
+        edukia = erantzuna.content
+
+        #############################################
+        # RELLENAR CON CODIGO DE LA PETICION HTTP
+        # Y PROCESAMIENTO DE LA RESPUESTA HTTP
+        #############################################
 
         progress = 66
         progress_var.set(progress)
         progress_bar.update()
         time.sleep(0.1)
 
-        print("\n##### 4. ESKAERA #####")
+        print("\n##### 3. ESKAERA #####")
+        metodoa = 'GET'
+        uria = location
+        goiburuak = {'Host': 'egela.ehu.eus',
+                     'Cookie': self._cookiea}
+        erantzuna = requests.request(metodoa, uria, headers=goiburuak, allow_redirects=False)
+        print(metodoa + " " + uria)
+        kodea = erantzuna.status_code
+        deskribapena = erantzuna.reason
+        print(str(kodea) + " " + deskribapena)
+        for goiburua in erantzuna.headers:
+            print(goiburua + ": " + erantzuna.headers[goiburua])
+        edukia = erantzuna.content
+        print(edukia)
 
-        uria = "https://egela.ehu.eus/"
-        erantzuna = requests.request(metodoa, uria, allow_redirects=False)
         progress = 100
         progress_var.set(progress)
         progress_bar.update()
         time.sleep(0.1)
         popup.destroy()
-
-        if COMPROBACION_DE_LOG_IN:
-            #############################################
-            # ACTUALIZAR VARIABLES
-            #############################################
+        print(erantzuna.headers)
+        erantzuna.headers['Location'] = 'https://egela.ehu.eus/course/view.php?id=29145'
+        if erantzuna.headers.__contains__('Location'):
+            headers = {'Host': 'egela.ehu.eus', 'Cookie': self._cookiea}
+            requests.request('GET', erantzuna.headers['Location'], headers=headers, allow_redirects=False)
+            self._login = 1
             self._root.destroy()
         else:
             messagebox.showinfo("Alert Message", "Login incorrect!")
 
     def get_pdf_refs(self):
-        popup, progress_var, progress_bar = helper.progress("get_pdf_refs", "Downloading PDF list...")
-        progress = 0
-        progress_var.set(progress)
-        progress_bar.update()
+        def get_pdf_refs(self):
+            popup, progress_var, progress_bar = helper.progress("get_pdf_refs", "Downloading PDF list...")
+            progress = 0
+            progress_var.set(progress)
+            progress_bar.update()
 
-        print("\n##### 4. ESKAERA (Ikasgairen eGelako orrialde nagusia) #####")
-        #############################################
-        # RELLENAR CON CODIGO DE LA PETICION HTTP
-        # Y PROCESAMIENTO DE LA RESPUESTA HTTP
-        #############################################
+            print("\n##### 4. ESKAERA (Ikasgairen eGelako orrialde nagusia) #####")
+            metodoa = 'GET'
+            uria = "https://egela.ehu.eus/course/view.php?id=29145"
+            goiburuak = {'Host': 'egela.ehu.eus',
+                         'Cookie': self._cookiea}
+            erantzuna = requests.request(metodoa, uria, headers=goiburuak, allow_redirects=False)
+            print(metodoa + " " + uria)
+            kodea = erantzuna.status_code
+            deskribapena = erantzuna.reason
+            print(str(kodea) + " " + deskribapena)
+            for goiburua in erantzuna.headers:
+                print(goiburua + ": " + erantzuna.headers[goiburua])
+            edukia = erantzuna.content
 
-        progress_step = float(100.0 / len(self._refs))
+            print("\n##### HTML-aren azterketa... #####")
+            soup = BeautifulSoup(edukia, 'html.parser')
+            item_results = soup.find_all('img', {'class': 'iconlarge activityicon'})
+            for each in item_results:
 
-        print("\n##### HTML-aren azterketa... #####")
-        #############################################
-        # ANALISIS DE LA PAGINA DEL AULA EN EGELA
-        # PARA BUSCAR PDFs
-        #############################################
+                if each['src'].find("/pdf") != -1:
+                    print("\n##### PDF-a bat aurkitu da! #####")
+                    pdf_link = each.parent['href']
 
-        # ACTUALIZAR BARRA DE PROGRESO
-        # POR CADA PDF ANIADIDO EN self._refs
-        progress += progress_step
-        progress_var.set(progress)
-        progress_bar.update()
-        time.sleep(0.1)
+                    uria = pdf_link
+                    headers = {'Host': 'egela.ehu.eus',
+                               'Cookie': self._cookiea}
+                    erantzuna = requests.get(uria, headers=headers, allow_redirects=False)
+                    print(metodoa + " " + uria)
+                    kodea = erantzuna.status_code
+                    deskribapena = erantzuna.reason
+                    print(str(kodea) + " " + deskribapena)
+                    edukia = erantzuna.content
 
-        popup.destroy()
-        return self._refs
+                    soup2 = BeautifulSoup(edukia, 'html.parser')
+                    div_pdf = soup2.find('div', {'class': 'resourceworkaround'})
+                    pdf_link = div_pdf.a['href']
+                    pdf_izena = pdf_link.split('/')[-1]
+                    self._refs.append({'link': pdf_link, 'pdf_name': pdf_izena})
+
+                progress += 1.5
+                progress_var.set(progress)
+                progress_bar.update()
+                time.sleep(0.1)
+
+            popup.destroy()
+            return self._refs
 
     def get_pdf(self, selection):
         print("##### PDF-a deskargatzen... #####")
-        #############################################
-        # RELLENAR CON CODIGO DE LA PETICION HTTP
-        # Y PROCESAMIENTO DE LA RESPUESTA HTTP
-        #############################################
+        metodoa = 'GET'
+        uria = self._refs[selection]['link']
+        print(uria)
+        headers = {'Host': 'egela.ehu.eus',
+                   'Cookie': self._cookiea}
+        erantzuna = requests.get(uria, headers=headers, allow_redirects=False)
+        pdf_file = erantzuna.content
+        pdf_name = self._refs[selection]['pdf_name']
 
         return pdf_name, pdf_file

@@ -1,8 +1,8 @@
 from socket import AF_INET, socket, SOCK_STREAM
 import helper
 
-app_key = ''
-app_secret = ''
+app_key = 'zdtjd6c922u63e7'
+app_secret = 'zdtjd6c922u63e7'
 server_addr = "localhost"
 server_port = 8090
 redirect_uri = "http://" + server_addr + ":" + str(server_port)
