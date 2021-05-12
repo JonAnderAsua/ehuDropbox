@@ -168,7 +168,7 @@ pdfs = egela.get_pdf_refs()
 # Login Dropbox
 root = tk.Tk()
 root.geometry('250x100')
-root.iconbitmap('./favicon.ico')
+#root.iconbitmap('./favicon.ico')
 root.title('Login Dropbox')
 helper.center(root)
 
@@ -189,7 +189,7 @@ root.mainloop()
 
 newroot = tk.Tk()
 newroot.geometry("850x400")
-newroot.iconbitmap('./favicon.ico')
+#newroot.iconbitmap('./favicon.ico')
 newroot.title("eGela -> Dropbox")
 helper.center(newroot)
 
