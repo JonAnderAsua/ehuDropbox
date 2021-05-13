@@ -93,14 +93,7 @@ class Dropbox:
         list_uri = 'https://api.dropboxapi.com/2/files/list_folder'
         cabeceras = {'Authorization': 'Bearer ' + self._access_token,
                      'Content-Type': 'application/json'}
-        datos = {
-            "path": self._path,
-            "recursive": False,
-            "include_media_info": False,
-            "include_deleted": False,
-            "include_has_explicit_shared_members": False,
-            "include_mounted_folders": True,
-            "include_non_downloadable_files": True}
+        datos = {"path": self._path,"recursive": False,"include_media_info": False,"include_deleted": False,"include_has_explicit_shared_members": False,"include_mounted_folders": True,"include_non_downloadable_files": True}
         datos_encoded = json.dumps(datos)
         respuesta = requests.post(list_uri, headers=cabeceras, data=datos_encoded, allow_redirects=False)
         status = respuesta.status_code
@@ -117,10 +110,11 @@ class Dropbox:
         uri = "https://content.dropboxapi.com/2/files/upload"
         datuak = {'path': file_path, 'mode': 'add', 'autorename': True, 'mute': False, 'strict_conflict': False}
         datuak_json = json.dumps(datuak)
-        goiburuak = {'Host': 'content.dropboxapi.com', 'Authorization': 'Bearer ' + self._access_token,
-                     'Dropbox-API-Arg': datuak_json, 'Content-Type': 'application/octet-stream'}
+
+        goiburuak = {'Host': 'content.dropboxapi.com', 'Authorization': 'Bearer ' + self._access_token,'Dropbox-API-Arg': datuak_json, 'Content-Type': 'application/octet-stream'}
         erantzuna = requests.post(uri, headers=goiburuak, data=file_data, allow_redirects=False)
         status = erantzuna.status_code
+        print("\nStatus:" + str(status))
 
 
     def delete_file(self, file_path):

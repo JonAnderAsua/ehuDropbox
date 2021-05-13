@@ -105,7 +105,6 @@ class eGela:
         uria = "https://egela.ehu.eus/course/view.php?id=42336"
         goiburuak = {'Host': 'egela.ehu.eus', 'Cookie': self._cookiea}
         erantzuna = requests.request(metodoa, uria, headers=goiburuak, allow_redirects=False)
-        print(metodoa + " " + uria)
         kodea = erantzuna.status_code
         deskribapena = erantzuna.reason
         print(str(kodea) + " " + deskribapena)
@@ -148,8 +147,7 @@ class eGela:
         metodoa = 'GET'
         uria = self._refs[selection]['link']
         print(uria)
-        headers = {'Host': 'egela.ehu.eus',
-                   'Cookie': self._cookiea}
+        headers = {'Host': 'egela.ehu.eus','Cookie': self._cookiea}
         erantzuna = requests.get(uria, metodoa, headers=headers, allow_redirects=False)
         pdf_file = erantzuna.content
         pdf_name = self._refs[selection]['pdf_name']

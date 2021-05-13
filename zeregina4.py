@@ -91,7 +91,7 @@ def create_folder():
     popup = tk.Toplevel(newroot)
     popup.geometry('200x100')
     popup.title('Dropbox')
-    popup.iconbitmap('./favicon.ico')
+#    popup.iconbitmap('./favicon.ico')
     helper.center(popup)
 
     login_frame = tk.Frame(popup, padx=10, pady=10)
